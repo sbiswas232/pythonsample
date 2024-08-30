@@ -1,0 +1,30 @@
+version: 0.2
+
+env:
+  parameter-store:
+    DOCKER_REGISTRY_USERNAME: /sample-pythonapp/docker/username
+    DOCKER_REGISTRY_PASSWORD: /sample-pythonapp/docker/password
+
+phases:
+  install:
+    runtime-versions:
+      python: latest
+  pre_build:
+    commands:
+      - echo "Installing dependencies..."
+      - pip install -r requirements.txt
+  build:
+    commands:
+      - echo "Building Docker Image..."
+      - docker build -t "$DOCKER_REGISTRY_USERNAME/codebuild-sample-pythonapp:v31aug" .
+      - docker images
+  post_build:
+    commands:
+      - echo "Push Image to DockerHub..."
+      - echo "$DOCKER_REGISTRY_PASSWORD" | docker login -u "$DOCKER_REGISTRY_USERNAME" --password-stdin docker.io
+      - docker push "$DOCKER_REGISTRY_USERNAME/codebuild-sample-pythonapp:v31aug"
+      - docker logout
+      
+artifacts:
+  files:
+    - '**/*.py'
