@@ -1,10 +1,16 @@
 version: "3.3"
 services:
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - '6379:6379'
+ 
   web:
-    image: "sbiswas232/sample-pythonapp:v03sep"
-    container_name: pythonappcont
+    image: sample-python:latest
+    container_name: pythonapp-con
     build:
-      context: .
+      context: . 
       dockerfile: Dockerfile
     ports:
       - "80:80"
